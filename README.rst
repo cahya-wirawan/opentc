@@ -1,5 +1,7 @@
-# Open Text Classification (OpenTC)
-This is a text classification engine using several algorithms in machine learning. Following algorithms will be 
+========
+Open Text Classification (OpenTC)
+========
+This is a text classification engine using several algorithms in machine learning. Following algorithms will be
 supported:
 - Naive Bayes (Scikit-learn)
 - Support Vector Machine (Scikit-learn)
@@ -9,17 +11,24 @@ supported:
 The engine is running as a server listening on command and text to be classified. By default it listens on localhost 
 port 3333, but it can be changed in the yaml configuration file. 
 
-## Requirements
+------------
+Requirements
+------------
 - Python 3.0 or newer
 - Scikit-learn
 - Tensorflow 1.0 or newer 
 
-## textclassificationd.py
+-------
+opentcd
+-------
 
-### synopsis
+synopsis
+========
+
 textclassificationd.py
 
-### Description
+Description
+===========
 The daemon listens for incoming connections on TCP socket and classify files or text string on demand. 
 It reads the configuration from /etc/textclassification/textclassification.yml
 
