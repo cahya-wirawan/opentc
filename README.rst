@@ -3,6 +3,7 @@ Open Text Classification (OpenTC)
 =================================
 This is a text classification engine using several algorithms in machine learning. Following algorithms will be
 supported:
+
 - Naive Bayes (Scikit-learn)
 - Support Vector Machine (Scikit-learn)
 - Convolutional Neural Network (Tensorflow)
