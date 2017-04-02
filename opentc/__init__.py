@@ -5,7 +5,10 @@ OpenTC is text classification engine running as client server architecture. It l
 import os
 import logging.config
 import yaml
+import logging
 
+
+__author__ = "Cahya Wirawan <Cahya.Wirawan@gmail.com>"
 __version__ = '0.2.0'
 
 
@@ -27,3 +30,4 @@ def setup_logging(
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
+

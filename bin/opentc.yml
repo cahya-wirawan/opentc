@@ -1,0 +1,132 @@
+word_embeddings: &word_embeddings
+  # Two types of word embedding algorithm (word2vec and glove) are supported.
+  # Just set the default to empty string to disable the word embeddings
+  default: word2vec
+  word2vec:
+    path: data/input/word_embeddings/GoogleNews-vectors-negative300.bin
+    dimension: 300
+    binary: True
+  glove:
+    path: data/input/word_embeddings/glove.6B.100d.txt
+    dimension: 100
+    length: 400000
+
+classifiers: &classifiers
+  bayes:
+    enabled: True
+    pre_trained_file:
+      mrpolarity: data/input/bayes_mrpolarity_20170323_142422.pkl
+      twenty_newsgroup: data/input/bayes_twenty_newsgroup_20170323_142449.pkl
+  svm:
+    enabled: True
+    pre_trained_file:
+      mrpolarity:  data/input/svm_mrpolarity_20170323_142422.pkl
+      twenty_newsgroup: data/input/svm_twenty_newsgroup_20170323_142449.pkl
+  cnn:
+    enabled: True
+    batch_size: 64
+    pre_trained_dir:
+      mrpolarity: data/input/cnn_mrpolarity_20170301_090000
+      twenty_newsgroup: data/input/cnn_twenty_newsgroup_20170301_090000
+    dev_sample_percentage: 0.1
+    word_embeddings: *word_embeddings
+    embedding_dim: 128
+    filter_sizes: "3,4,5"
+    num_filters: 128
+    dropout_keep_prob: 0.5
+    l2_reg_lambda: 0.0
+    batch_size: 64
+    num_epochs: 200
+    evaluate_every: 100
+    checkpoint_every: 100
+    num_checkpoints: 5
+    allow_soft_placement: True
+    log_device_placement: False
+
+datasets: &datasets
+  # Support currently 3 datasets: mrpolarity, twenty_newsgroup and localdata
+  default: twenty_newsgroup
+  mrpolarity: &mrpolarity
+    name: mrpolarity
+    categories:
+      - positive_data
+      - negative_data
+    positive_data_file:
+      path: "data/input/rt-polaritydata/rt-polarity.pos"
+      info: "Data source for the positive data"
+    negative_data_file:
+      path: "data/input/rt-polaritydata/rt-polarity.neg"
+      info: "Data source for the negative data"
+  twenty_newsgroup: &twenty_newsgroup
+    # The dataset includes following 20 newsgroups:
+    # alt.atheism,
+    # comp.graphics,
+    # comp.os.ms-windows.misc,
+    # comp.sys.ibm.pc.hardware,
+    # comp.sys.mac.hardware,
+    # comp.windows.x,
+    # misc.forsale,
+    # rec.autos,
+    # rec.motorcycles,
+    # rec.sport.baseball,
+    # rec.sport.hockey,
+    # sci.crypt,
+    # sci.electronics,
+    # sci.med,
+    # sci.space,
+    # soc.religion.christian,
+    # talk.politics.guns,
+    # talk.politics.mideast,
+    # talk.politics.misc,
+    # talk.religion.misc
+    name: twenty_newsgroup
+    categories:
+      - alt.atheism
+      - comp.graphics
+      - sci.med
+      - soc.religion.christian
+    subset: test
+    shuffle: True
+    random_state: 42
+  generic: &generic
+    # Load text files with categories as subfolder names.
+    # Individual samples are assumed to be files stored
+    # a two levels folder structure such as the following:
+    # container_folder/
+    #   category_1_folder/
+    #     file_1.txt file_2.txt ... file_42.txt
+    #   category_2_folder/
+    #     file_43.txt file_44.txt ...
+    #
+    # As an example, a SentenceCorpus dataset from
+    # https://archive.ics.uci.edu/ml/datasets/Sentence+Classification
+    # has been used. The dataset includes following 3 domains:
+    # arxiv, jdm and plos
+    name: generic
+    container_path: data/input/SentenceCorpus
+    categories:
+    load_content:
+    shuffle: True
+    random_state: 42
+    encoding: 'utf-8'
+
+server:
+  address: localhost
+  port: 3333
+  timeout:
+  dataset: *twenty_newsgroup
+  classifiers: *classifiers
+
+client:
+
+training:
+  result_dir: data/output
+  datasets:
+    <<: *datasets
+    default: mrpolarity
+  classifiers:
+    <<: *classifiers
+    default: svm
+
+evaluation:
+

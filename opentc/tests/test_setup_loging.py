@@ -1,6 +1,6 @@
 import logging
 from unittest import TestCase
-from .. import setup_logging
+from opentc import setup_logging
 
 
 class TestSetupLogging(TestCase):

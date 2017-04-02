@@ -1,4 +1,5 @@
-from setuptools import setup
+from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
 
 
 def readme():
@@ -7,7 +8,7 @@ def readme():
 
 setup(
     name='opentc',
-    version='0.1',
+    version='0.2.2',
     description='Open Text Classification engine',
     long_description='Really, the funniest around.',
     classifiers=[
@@ -22,9 +23,14 @@ setup(
     author='Cahya Wirawan',
     author_email='Cahya.Wirawan@gmail.com',
     license='MIT',
-    packages=['opentc'],
+    packages=find_packages('.'),
+    package_dir = {'': '.'},
     install_requires=[
         'tensorflow',
-        'scikit-learn'
+        'scikit-learn',
+        'scipy',
+        'PyYAML'
     ],
+    scripts=['bin/opentc', 'bin/opentcd'],
+    include_package_data=True,
     zip_safe=False)

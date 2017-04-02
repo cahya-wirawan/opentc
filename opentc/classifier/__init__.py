@@ -1,5 +1,5 @@
 import logging
-from .. import setup_logging
+from opentc import setup_logging
 from abc import ABC, abstractmethod
 
 

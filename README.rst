@@ -26,17 +26,17 @@ opentcd
 synopsis
 ========
 
-textclassificationd.py
+opentcd.py
 
 Description
 ===========
 The daemon listens for incoming connections on TCP socket and classify files or text string on demand. 
-It reads the configuration from /etc/textclassification/textclassification.yml
+It reads the configuration from /etc/opentc/opentc.yml
 
 
 Commands
 --------
-The command uses a newline character as the delimiter. If textclassificationd.py doesn't recognize the command, 
+The command uses a newline character as the delimiter. If opentcd.py doesn't recognize the command,
 or the command doesn't follow the requirements specified below, it will reply with an error message, but still wait 
 for the next commands (this behaviour can be changed in the future).
 

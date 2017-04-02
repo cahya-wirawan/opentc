@@ -2,7 +2,7 @@ import numpy as np
 import re
 import logging
 from abc import ABC, abstractmethod
-from .. import setup_logging
+from opentc import setup_logging
 
 
 class Dataset(ABC):
@@ -58,7 +58,7 @@ class Dataset(ABC):
 
     @staticmethod
     def create_dataset(dataset):
-        class_ = getattr(__import__("dataset_" + dataset['name'] ),
-                         "Dataset" + dataset['name'].title())
+        module = __import__("opentc.dataset." + dataset['name'])
+        class_ = getattr(getattr(getattr(module, "dataset"), dataset['name']), dataset['name'].title().replace("_",""))
         instance = class_(dataset)
         return instance
