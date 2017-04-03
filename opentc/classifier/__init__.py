@@ -7,8 +7,7 @@ class Classifier(ABC):
     __instances__ = dict()
 
     def __init__(self):
-        setup_logging()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(self.__module__)
         Classifier.__instances__[self.__class__.__name__] = self
 
     @abstractmethod

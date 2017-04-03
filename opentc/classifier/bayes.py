@@ -25,7 +25,7 @@ class Bayes(Classifier):
         joblib.dump(self.clf, filename + ".pkl", compress=9)
 
     def reload(self, filename):
-        self.logger.info("reload")
+        self.logger.debug("reload")
         self.clf = joblib.load(filename)
 
     def predict(self, data):
