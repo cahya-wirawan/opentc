@@ -30,7 +30,7 @@ handlers:
         encoding: utf8
 
 loggers:
-    textclassification:
+    opentc:
         level: DEBUG
         handlers: [console]
         propagate: no
