@@ -32,6 +32,6 @@ setup(
         'PyYAML'
     ],
     scripts=['bin/opentc', 'bin/opentcd'],
-    data_files=[('etc/opentc', ['config/opentc.yml', 'config/logging.yml'])],
+    data_files=[('/etc/opentc', ['config/opentc.yml', 'config/logging.yml'])],
     include_package_data=True,
     zip_safe=False)
