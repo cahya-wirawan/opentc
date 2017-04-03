@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 
 
 def readme():
@@ -8,7 +7,7 @@ def readme():
 
 setup(
     name='opentc',
-    version='0.2.2',
+    version='0.3.0',
     description='Open Text Classification engine',
     long_description='Really, the funniest around.',
     classifiers=[
@@ -24,12 +23,19 @@ setup(
     author_email='Cahya.Wirawan@gmail.com',
     license='MIT',
     packages=find_packages('.'),
-    package_dir = {'': '.'},
+    package_dir={'': '.'},
     install_requires=[
-        'tensorflow',
+        'appdirs',
+        'numpy',
+        'opentc',
+        'packaging',
+        'protobuf',
+        'pyparsing',
+        'PyYAML',
         'scikit-learn',
         'scipy',
-        'PyYAML'
+        'six',
+        'tensorflow'
     ],
     scripts=['bin/opentc', 'bin/opentcd'],
     data_files=[('/etc/opentc', ['config/opentc.yml', 'config/logging.yml'])],
