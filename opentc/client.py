@@ -1,14 +1,8 @@
-
 import os
 import sys
 import logging
-import threading
-import socketserver
 import socket
-import hashlib
 import struct
-import json
-import opentc
 
 
 class SimpleSocket(object):
@@ -51,7 +45,6 @@ class Client(object):
     max_chunk_size = 1024
 
     def __init__(self, address='localhost', port=3333):
-        opentc.setup_logging()
         self.address = address
         self.port = port
         self.simple_socket = SimpleSocket(address=self.address, port=self.port)

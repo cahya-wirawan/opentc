@@ -2,7 +2,6 @@ import numpy as np
 import re
 import logging
 from abc import ABC, abstractmethod
-from opentc import setup_logging
 
 
 class Dataset(ABC):
@@ -10,8 +9,7 @@ class Dataset(ABC):
     __instances__ = dict()
 
     def __init__(self):
-        setup_logging()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(self.__module__)
         Dataset.__instances__[self.__class__.__name__] = self
 
     @staticmethod

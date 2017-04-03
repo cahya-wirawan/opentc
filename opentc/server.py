@@ -1,4 +1,3 @@
-
 import sys
 import logging.config
 import threading
