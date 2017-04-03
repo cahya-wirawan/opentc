@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import opentc
 
 
 def readme():
@@ -7,9 +8,9 @@ def readme():
 
 setup(
     name='opentc',
-    version='0.3.0',
-    description='Open Text Classification engine',
-    long_description='Really, the funniest around.',
+    version=opentc.__version__,
+    description='A text classification engine',
+    long_description=readme(),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
@@ -25,16 +26,12 @@ setup(
     packages=find_packages('.'),
     package_dir={'': '.'},
     install_requires=[
-        'appdirs',
         'numpy',
-        'opentc',
-        'packaging',
         'protobuf',
         'pyparsing',
         'PyYAML',
         'scikit-learn',
         'scipy',
-        'six',
         'tensorflow'
     ],
     scripts=['bin/opentc', 'bin/opentcd'],

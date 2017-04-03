@@ -15,9 +15,14 @@ port 3333, but it can be changed in the yaml configuration file.
 
 Requirements
 ============
-- Python 3.0 or newer
-- Scikit-learn
-- Tensorflow 1.0 or newer 
+- Python 3.x
+- numpy
+- protobuf
+- pyparsing
+- PyYAML
+- scikit-learn
+- scipy
+- tensorflow 1.x
 
 
 opentcd

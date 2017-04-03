@@ -9,7 +9,7 @@ import logging
 
 
 __author__ = "Cahya Wirawan <Cahya.Wirawan@gmail.com>"
-__version__ = '0.3.0'
+__version__ = '0.3.3'
 
 
 def setup_logging(
