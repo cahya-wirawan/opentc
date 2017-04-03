@@ -11,7 +11,8 @@ from opentc import __version__
 
 
 class TestOpentc(unittest.TestCase):
-    setup_logging()
+    config_directories = [os.curdir, os.path.expanduser("~/.opentc"), "/etc/opentc", os.environ.get("OPENTC_CONF_DIR")]
+    setup_logging(config_directories=config_directories)
     logger = logging.getLogger(__name__)
     run_server = False
     address, port = "localhost", 3333

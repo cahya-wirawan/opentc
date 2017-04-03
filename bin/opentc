@@ -4,12 +4,12 @@ import logging
 import yaml
 import argparse
 from opentc.training import Training
-from opentc import setup_logging
+from opentc import setup_logging, setup_config
 
 
 if __name__ == "__main__":
-    search_directories = [os.curdir, os.path.expanduser("~/.opentc"), "/etc/opentc", os.environ.get("OPENTC_CONF_DIR")]
-    setup_logging()
+    config_directories = [os.curdir, os.path.expanduser("~/.opentc"), "/etc/opentc", os.environ.get("OPENTC_CONF_DIR")]
+    setup_logging(config_directories=config_directories)
     logger = logging.getLogger(__name__)
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--classifier",
@@ -19,27 +19,7 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--log_configuration_file", help="set the log configuration file")
     args = parser.parse_args()
 
-    config_found = False
-    cfg = None
-    config_file_path = None
-    if args.configuration_file:
-        config_file_path = args.configuration_file
-        if os.path.isfile(config_file_path) and os.access(config_file_path, os.R_OK):
-            config_found = True
-    else:
-        for directory in search_directories:
-            if directory is None:
-                continue
-            config_file_path = os.path.join(directory, "opentc.yml")
-            if os.path.isfile(config_file_path) and os.access(config_file_path, os.R_OK):
-                config_found = True
-                break
-    if config_found:
-        with open(config_file_path, 'r') as ymlfile:
-            cfg = yaml.load(ymlfile)
-    else:
-        print("The configuration file is not found.")
-        exit(1)
+    cfg = setup_config(config_directories=config_directories, config_file=args.configuration_file)
 
     training = Training(cfg["training"])
     training.start(cn=args.classifier, dn=args.dataset)

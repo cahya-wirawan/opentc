@@ -13,21 +13,61 @@ __version__ = '0.2.0'
 
 
 def setup_logging(
-        default_path='logging.yml',
-        default_level=logging.INFO,
-        env_key='LOG_CFG'
+        config_directories=None,
+        config_file=None,
+        default_level=logging.INFO
 ):
     """Setup logging configuration
 
     """
-    path = default_path
-    value = os.getenv(env_key, None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, 'rt') as f:
-            config = yaml.safe_load(f.read())
+    config_found = False
+    config_file_path = None
+    if config_file:
+        config_file_path = config_file
+        if os.path.isfile(config_file_path) and os.access(config_file_path, os.R_OK):
+            config_found = True
+    else:
+        for directory in config_directories:
+            if directory is None:
+                continue
+            config_file_path = os.path.join(directory, "logging.yml")
+            if os.path.isfile(config_file_path) and os.access(config_file_path, os.R_OK):
+                config_found = True
+                break
+    if config_found:
+        with open(config_file_path, 'rt') as ymlfile:
+            config = yaml.safe_load(ymlfile.read())
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
 
+
+def setup_config(
+        config_directories=None,
+        config_file=None,
+        default_level=logging.INFO
+):
+    """Setup logging configuration
+
+    """
+    config_found = False
+    config_file_path = None
+    if config_file:
+        config_file_path = config_file
+        if os.path.isfile(config_file_path) and os.access(config_file_path, os.R_OK):
+            config_found = True
+    else:
+        for directory in config_directories:
+            if directory is None:
+                continue
+            config_file_path = os.path.join(directory, "opentc.yml")
+            if os.path.isfile(config_file_path) and os.access(config_file_path, os.R_OK):
+                config_found = True
+                break
+    if config_found:
+        with open(config_file_path, 'rt') as ymlfile:
+            config = yaml.safe_load(ymlfile.read())
+        return config
+    else:
+        print("The configuration file is not found.")
+        exit(1)
