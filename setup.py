@@ -1,6 +1,12 @@
 from setuptools import setup, find_packages
 import opentc
 
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except ImportError:
+    long_description = open('README.md').read()
+
 
 def readme():
     with open('README.rst') as f:
@@ -9,8 +15,8 @@ def readme():
 setup(
     name='opentc',
     version=opentc.__version__,
-    description='A text classification engine',
-    long_description=readme(),
+    description='A text classification engine using machine learning and designed as client-server architecture',
+    long_description=long_description,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
@@ -27,7 +33,6 @@ setup(
     package_dir={'': '.'},
     install_requires=[
         'numpy',
-        'protobuf',
         'pyparsing',
         'PyYAML',
         'scikit-learn',

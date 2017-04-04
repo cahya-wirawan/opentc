@@ -12,6 +12,8 @@ class CnnText(object):
     """
     A CNN for text classification.
     Uses an embedding layer, followed by a convolutional, max-pooling and softmax layer.
+    This code is based on Denny Britz's CNN implementation for text classification in Tensorflow:
+    http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/
     """
     def __init__(
       self, sequence_length, num_classes, vocab_size,
@@ -106,6 +108,10 @@ class CnnTextEvaluator(object):
         self.vocab_path = os.path.join(self.cfg['pre_trained_dir'][self.current_category], "vocab")
         self.vocab_processor = learn.preprocessing.VocabularyProcessor.restore(self.vocab_path)
 
+        self.sess = None
+        self.predictions = None
+        self.dropout_keep_prob = None
+        self.input_x = None
         checkpoint_file = tf.train.latest_checkpoint(self.cfg['pre_trained_dir'][self.current_category] + "/checkpoints")
         graph = tf.Graph()
         with graph.as_default():
