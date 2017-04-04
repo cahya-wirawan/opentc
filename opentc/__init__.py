@@ -6,10 +6,10 @@ import os
 import logging.config
 import yaml
 import logging
+from .version import __version__
 
 
 __author__ = "Cahya Wirawan <Cahya.Wirawan@gmail.com>"
-__version__ = '0.3.9'
 
 
 def setup_logging(
