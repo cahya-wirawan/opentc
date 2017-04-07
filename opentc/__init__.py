@@ -6,7 +6,7 @@ import os
 import logging.config
 import yaml
 import logging
-from .version import __version__
+from .config import __version__
 
 
 __author__ = "Cahya Wirawan <Cahya.Wirawan@gmail.com>"

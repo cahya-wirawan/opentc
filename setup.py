@@ -7,7 +7,7 @@ except ImportError:
     long_description = open('README.md').read()
 
 __version__ = ""
-exec(open('opentc/version.py').read())
+exec(open('opentc/config.py').read())
 
 setup(
     name='opentc',
