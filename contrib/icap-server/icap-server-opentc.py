@@ -85,7 +85,7 @@ class ICAPHandler(BaseICAPRequestHandler):
     logger = logging.getLogger(__name__)
     remove_newline = re.compile(b'\r?\n')
 
-    def example_OPTIONS(self):
+    def opentc_OPTIONS(self):
         response = self.server.opentc.command("PING\n")
         response = json.loads(response.decode('utf-8'))
         self.logger.debug("OPTIONS Ping response: {}".format(response))
@@ -94,7 +94,7 @@ class ICAPHandler(BaseICAPRequestHandler):
         self.set_icap_header(b'Service', b'PyICAP Server 1.0')
         self.send_headers(False)
 
-    def example_REQMOD(self):
+    def opentc_REQMOD(self):
         self.multipart_data = None
         self.last_form_field = None
         self.big_chunk = b''
