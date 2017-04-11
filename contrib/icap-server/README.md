@@ -11,9 +11,18 @@ the icap server, which will then forward it to the OpenTC server. OpenTC server 
 based on the pre-trained data. The result of the text classification is sent back to the icap server, which will 
 decide if the outgoing traffic should be blocked or allowed.  
 
+## Requirements
+- Python 3.x
+- opentc
+- PyYAML
+- pyicap 1.0b1
+- python-magic
+- python-multipart
+
+
 ## TODO
 - the icap server should monitor the availability of the OpenTC server. In case it is not up or running, thís icap 
 server should try to reconnect it again several times in difference interval (i.e: the interval of the first 3 
-reconnection could be in 10 seconds, and after 3 unsuccessful attempts to reconnect, the interval connection time 
-should be reduced to 300 seconds). Currently, the icap server has to be restarted manually after the OpenTC server
+reconnection could be 10 seconds, and after 3 unsuccessful attempts to reconnect, the interval connection time 
+should be changed to 300 seconds). Currently, the icap server has to be restarted manually after the OpenTC server
 is died or restarted.
