@@ -101,6 +101,8 @@ class ICAPHandler(BaseICAPRequestHandler):
         self.multipart_data = None
         self.last_form_field = None
         self.big_chunk = b''
+        self.content_analysis_results = dict()
+
         try:
             response = self.server.opentc.command("PING\n")
             response = json.loads(response.decode('utf-8'))
@@ -119,20 +121,18 @@ class ICAPHandler(BaseICAPRequestHandler):
 
         def on_part_end():
             self.logger.debug("on_part_end")
-            for key in self.multipart_data.keys():
+            for key in self.multipart_data:
                 if key == b'Content':
                     mime_type = magic.from_buffer(self.multipart_data[b'Content'], mime=True)
                     self.logger.debug("Content mime_type: {}".format(mime_type))
                     if b'Content-Type' in self.multipart_data:
                         content_type = [ct.strip() for ct in self.multipart_data[b'Content-Type'].split(b';')]
-                        if b'text/plain' in content_type:
-                            content = self.remove_newline.sub(b' ', self.multipart_data[b'Content'])
-                            response = self.server.opentc.predict_stream(content)
-                            response = json.loads(response.decode('utf-8'))
-                            self.logger.debug("on_part_end predict_stream response: {}".format(response))
+                        result = self.content_analyse(content_type, self.multipart_data[b'Content'])
+                        name = self.multipart_data[b'Content-Disposition'].split(b';')[1].split(b'=')[1]
+                        self.content_analysis_results[name] = result
                 else:
                     self.logger.debug("{}: {}".format(key, self.multipart_data[key]))
-            return "end"
+            return
 
         def on_header_field(data, start, end):
             self.last_form_field = data[start:end]
@@ -141,6 +141,9 @@ class ICAPHandler(BaseICAPRequestHandler):
         def on_header_value(data, start, end):
             self.multipart_data[self.last_form_field] = data[start:end]
             self.logger.debug("on_header_value")
+
+        def on_end():
+            self.logger.debug("on_end")
 
         self.set_icap_response(200)
 
@@ -188,7 +191,8 @@ class ICAPHandler(BaseICAPRequestHandler):
                 'on_part_data': on_part_data,
                 'on_part_end': on_part_end,
                 'on_header_field': on_header_field,
-                'on_header_value': on_header_value
+                'on_header_value': on_header_value,
+                'on_end': on_end
             }
             parser = multipart.MultipartParser(boundary, callbacks)
             while True:
@@ -204,10 +208,55 @@ class ICAPHandler(BaseICAPRequestHandler):
                 parser.write(self.big_chunk[start:end])
                 size -= end
                 start = end
+            is_allowed = True
+            classifier_rules = {
+                "bayes": False,
+                "cnn": True,
+                "svm": False
+            }
+            clazz = "comp.graphics"
+            for result in self.content_analysis_results:
+                if self.content_analysis_results[result] is None:
+                    continue
+                for classifier in classifier_rules:
+                    if classifier_rules[classifier] is False:
+                        continue
+                    if clazz in self.content_analysis_results[result][classifier]:
+                        is_allowed = False
+                    else:
+                        is_allowed = True
+                        break
+                if is_allowed is False:
+                    break
+            if is_allowed:
+                self.set_enc_request(b' '.join(self.enc_req))
+                self.send_headers(True)
+                self.write_chunk(self.big_chunk)
+            else:
+                enc_req = self.enc_req[:]
+                enc_req[0] = b'GET'
+                enc_req[1] = b'http://oldjava.org'
+                self.set_enc_request(b' '.join(enc_req))
+                self.send_headers(True)
+                self.write_chunk(self.big_chunk)
 
-            self.set_enc_request(b' '.join(self.enc_req))
-            self.send_headers(True)
-            self.write_chunk(self.big_chunk)
+    def content_analyse(self, content_type, content):
+        self.logger.debug("content_analyse {}".format(content_type[0]))
+        content_min_length = 50
+        if len(content) < content_min_length:
+            result = None
+            self.logger.debug("content_analyse content_min_length < {}".format(content_min_length))
+            return result
+        if content_type[0] == b'text/plain':
+            content = self.remove_newline.sub(b' ', content)
+            response = self.server.opentc.predict_stream(content)
+            result = json.loads(response.decode('utf-8'))["result"]
+            self.logger.debug("content_analyse predict_stream result: {}".format(result))
+            return result
+        elif content_type[0] == b'application/pdf':
+            result = None
+            self.logger.debug("content_analyse predict_stream result: {}".format(result))
+            return result
 
 
 if __name__ == '__main__':
