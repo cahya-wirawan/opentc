@@ -1,6 +1,6 @@
 icap_server:
   address: "0.0.0.0"
-  port: 13440
+  port: 1344
 
 opentc_server:
   address: localhost

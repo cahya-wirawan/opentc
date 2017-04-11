@@ -88,7 +88,10 @@ class ICAPHandler(BaseICAPRequestHandler):
     def opentc_OPTIONS(self):
         response = self.server.opentc.command("PING\n")
         response = json.loads(response.decode('utf-8'))
-        self.logger.debug("OPTIONS Ping response: {}".format(response))
+        if response["status"] == "OK":
+            self.logger.debug("OPTIONS Ping response: {}".format(response))
+        else:
+            self.logger.debug("OPTIONS Ping response: the OpenTC server is not responding")
         self.set_icap_response(200)
         self.set_icap_header(b'Methods', b'REQMOD')
         self.set_icap_header(b'Service', b'PyICAP Server 1.0')
@@ -98,9 +101,12 @@ class ICAPHandler(BaseICAPRequestHandler):
         self.multipart_data = None
         self.last_form_field = None
         self.big_chunk = b''
-        response = self.server.opentc.command("PING\n")
-        response = json.loads(response.decode('utf-8'))
-        self.logger.debug("REQMOD Ping response: {}".format(response))
+        try:
+            response = self.server.opentc.command("PING\n")
+            response = json.loads(response.decode('utf-8'))
+            self.logger.debug("REQMOD Ping response: {}".format(response))
+        except OSError as err:
+            self.logger.error("OS error: {0}".format(err))
 
         def on_part_begin():
             self.multipart_data = dict()
