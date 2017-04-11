@@ -86,7 +86,7 @@ class ICAPHandler(BaseICAPRequestHandler):
     remove_newline = re.compile(b'\r?\n')
 
     def opentc_OPTIONS(self):
-        response = self.server.opentc.command("PING\n")
+        response = self.server.opentc["client"].command("PING\n")
         response = json.loads(response.decode('utf-8'))
         if response["status"] == "OK":
             self.logger.debug("OPTIONS Ping response: {}".format(response))
@@ -104,7 +104,7 @@ class ICAPHandler(BaseICAPRequestHandler):
         self.content_analysis_results = dict()
 
         try:
-            response = self.server.opentc.command("PING\n")
+            response = self.server.opentc["client"].command("PING\n")
             response = json.loads(response.decode('utf-8'))
             self.logger.debug("REQMOD Ping response: {}".format(response))
         except OSError as err:
@@ -208,23 +208,21 @@ class ICAPHandler(BaseICAPRequestHandler):
                 parser.write(self.big_chunk[start:end])
                 size -= end
                 start = end
+
             is_allowed = True
-            classifier_rules = {
-                "bayes": False,
-                "cnn": True,
-                "svm": False
-            }
-            clazz = "comp.graphics"
             for result in self.content_analysis_results:
                 if self.content_analysis_results[result] is None:
                     continue
-                for classifier in classifier_rules:
-                    if classifier_rules[classifier] is False:
+                for classifier in self.server.opentc["config"]["classifier_status"]:
+                    if self.server.opentc["config"]["classifier_status"][classifier] is False:
                         continue
-                    if clazz in self.content_analysis_results[result][classifier]:
-                        is_allowed = False
-                    else:
-                        is_allowed = True
+                    for restricted_class in self.server.opentc["config"]["restricted_classes"]:
+                        if restricted_class in self.content_analysis_results[result][classifier]:
+                            is_allowed = False
+                            break
+                        else:
+                            is_allowed = True
+                    if is_allowed is True:
                         break
                 if is_allowed is False:
                     break
@@ -249,7 +247,7 @@ class ICAPHandler(BaseICAPRequestHandler):
             return result
         if content_type[0] == b'text/plain':
             content = self.remove_newline.sub(b' ', content)
-            response = self.server.opentc.predict_stream(content)
+            response = self.server.opentc["client"].predict_stream(content)
             result = json.loads(response.decode('utf-8'))["result"]
             self.logger.debug("content_analyse predict_stream result: {}".format(result))
             return result
@@ -294,7 +292,9 @@ if __name__ == '__main__':
         opentc_server_port = cfg["opentc_server"]["port"]
 
     server = ThreadingSimpleServer((icap_server_address.encode('utf-8'), icap_server_port), ICAPHandler)
-    server.opentc = Client(address=opentc_server_address, port=opentc_server_port)
+    server.opentc = dict()
+    server.opentc["client"] = Client(address=opentc_server_address, port=opentc_server_port)
+    server.opentc["config"] = cfg["icap_server"]
     try:
         while 1:
             server.handle_request()

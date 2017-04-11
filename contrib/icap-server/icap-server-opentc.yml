@@ -1,6 +1,13 @@
 icap_server:
   address: "0.0.0.0"
   port: 1344
+  restricted_classes:
+    - alt.atheism
+    - soc.religion.christian
+  classifier_status:
+    bayes: False
+    svm: False
+    cnn: True
 
 opentc_server:
   address: localhost
