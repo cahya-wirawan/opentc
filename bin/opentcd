@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("-C", "--configuration_file", help="set the configuration file")
     parser.add_argument("-l", "--log_configuration_file", help="set the log configuration file")
     parser.add_argument("-p", "--port", help="define the port number which the server uses to listen")
-    parser.add_argument("-t", "--timeout", type=float, help="define the port number which the server uses to listen")
+    parser.add_argument("-t", "--timeout", type=float, help="define the time out")
     args = parser.parse_args()
 
     setup_logging(config_directories=config_directories, config_file=args.log_configuration_file)

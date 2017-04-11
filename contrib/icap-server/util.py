@@ -1,21 +1,15 @@
-"""
-OpenTC is text classification engine running as client server architecture. It listen on port 3333
+#!/bin/env python
 
-"""
 import os
 import logging.config
 import yaml
-import logging
-from .config import __version__
-
-
-__author__ = "Cahya Wirawan <Cahya.Wirawan@gmail.com>"
 
 
 def setup_logging(
         config_directories=None,
         config_file=None,
-        default_level=logging.INFO
+        default_level=logging.INFO,
+        default_filename="logging.yml"
 ):
     """Setup logging configuration
 
@@ -30,7 +24,7 @@ def setup_logging(
         for directory in config_directories:
             if directory is None:
                 continue
-            config_file_path = os.path.join(directory, "logging.yml")
+            config_file_path = os.path.join(directory, default_filename)
             if os.path.isfile(config_file_path) and os.access(config_file_path, os.R_OK):
                 config_found = True
                 break
@@ -44,7 +38,8 @@ def setup_logging(
 
 def setup_config(
         config_directories=None,
-        config_file=None
+        config_file=None,
+        default_filename="icap-server-opentc.yml"
 ):
     """Setup configuration
 
@@ -59,7 +54,7 @@ def setup_config(
         for directory in config_directories:
             if directory is None:
                 continue
-            config_file_path = os.path.join(directory, "opentc.yml")
+            config_file_path = os.path.join(directory, default_filename)
             if os.path.isfile(config_file_path) and os.access(config_file_path, os.R_OK):
                 config_found = True
                 break
