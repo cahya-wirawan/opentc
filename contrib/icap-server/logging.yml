@@ -30,8 +30,8 @@ handlers:
         encoding: utf8
 
 loggers:
-    icap-server:
-        level: DEBUG
+    module:
+        level: INFO
         handlers: [console]
         propagate: no
 
