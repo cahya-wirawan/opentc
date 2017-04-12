@@ -26,3 +26,6 @@ server should try to reconnect it again several times in difference interval (i.
 reconnection could be 10 seconds, and after 3 unsuccessful attempts to reconnect, the interval connection time 
 should be changed to 300 seconds). Currently, the icap server has to be restarted manually after the OpenTC server
 is died or restarted.
+- Currently the decision to take, either the traffic is blocked or allowed, is defined using manual 
+"for_loop-if-elif" sequences, which maybe not easy to understand or error prone. In the future, the software would
+use a rule engine (if there is any) to simplify the creation of complex rules.
