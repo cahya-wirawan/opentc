@@ -127,9 +127,12 @@ class ICAPHandler(BaseICAPRequestHandler):
                     self.logger.debug("Content mime_type: {}".format(mime_type))
                     if b'Content-Type' in self.multipart_data:
                         content_type = [ct.strip() for ct in self.multipart_data[b'Content-Type'].split(b';')]
-                        result = self.content_analyse(content_type, self.multipart_data[b'Content'])
+                        result = self.content_analyse(
+                            content_type=content_type, content=self.multipart_data[b'Content'],
+                            content_min_length=self.server.opentc["config"]["content_min_length"],
+                            client=self.server.opentc["client"])
                         name = self.multipart_data[b'Content-Disposition'].split(b';')[1].split(b'=')[1]
-                        self.content_analysis_results[name] = result
+                        self.content_analysis_results[name.decode("utf-8").replace('"', '')] = result
                 else:
                     self.logger.debug("{}: {}".format(key, self.multipart_data[key]))
             return
@@ -184,30 +187,40 @@ class ICAPHandler(BaseICAPRequestHandler):
             # Parse the Content-Type header to get the multipart boundary.
             content_type, params = parse_options_header(self.enc_req_headers[b'content-type'][0])
             boundary = params.get(b'boundary')
+            parser = None
+            if boundary is not None:
+                # Callbacks dictionary.
+                callbacks = {
+                    'on_part_begin': on_part_begin,
+                    'on_part_data': on_part_data,
+                    'on_part_end': on_part_end,
+                    'on_header_field': on_header_field,
+                    'on_header_value': on_header_value,
+                    'on_end': on_end
+                }
+                parser = multipart.MultipartParser(boundary, callbacks)
 
-            # Callbacks dictionary.
-            callbacks = {
-                'on_part_begin': on_part_begin,
-                'on_part_data': on_part_data,
-                'on_part_end': on_part_end,
-                'on_header_field': on_header_field,
-                'on_header_value': on_header_value,
-                'on_end': on_end
-            }
-            parser = multipart.MultipartParser(boundary, callbacks)
             while True:
                 chunk = self.read_chunk()
                 if chunk == b'':
                     break
                 self.big_chunk += chunk
 
-            size = len(self.big_chunk)
-            start = 0
-            while size > 0:
-                end = min(size, 1024 * 1024)
-                parser.write(self.big_chunk[start:end])
-                size -= end
-                start = end
+            if boundary is not None:
+                size = len(self.big_chunk)
+                start = 0
+                while size > 0:
+                    end = min(size, 1024 * 1024)
+                    parser.write(self.big_chunk[start:end])
+                    size -= end
+                    start = end
+            else:
+                result = self.content_analyse(
+                    content_type=content_type, content=self.big_chunk,
+                    content_min_length=self.server.opentc["config"]["content_min_length"],
+                    client=self.server.opentc["client"])
+                name = "text"
+                self.content_analysis_results[name] = result
 
             is_allowed = True
             for result in self.content_analysis_results:
@@ -217,6 +230,7 @@ class ICAPHandler(BaseICAPRequestHandler):
                     if self.server.opentc["config"]["classifier_status"][classifier] is False:
                         continue
                     for restricted_class in self.server.opentc["config"]["restricted_classes"]:
+                        self.logger.debug("{}: result:{}, classifier:{}".format(restricted_class, result, classifier))
                         if restricted_class in self.content_analysis_results[result][classifier]:
                             is_allowed = False
                             break
@@ -231,23 +245,28 @@ class ICAPHandler(BaseICAPRequestHandler):
                 self.send_headers(True)
                 self.write_chunk(self.big_chunk)
             else:
+                content = json.dumps(self.content_analysis_results).encode("utf-8")
                 enc_req = self.enc_req[:]
-                enc_req[0] = b'GET'
-                enc_req[1] = b'http://oldjava.org'
+                enc_req[0] = self.server.opentc["config"]["replacement_http_method"].encode("utf-8")
+                enc_req[1] = self.server.opentc["config"]["replacement_url"].encode("utf-8")
                 self.set_enc_request(b' '.join(enc_req))
+                self.enc_headers[b"content-type"] = [b"application/x-www-form-urlencoded"]
+                self.enc_headers[b"content-length"] = [str(len(content)).encode("utf-8")]
                 self.send_headers(True)
-                self.write_chunk(self.big_chunk)
+                self.write_chunk(content)
 
-    def content_analyse(self, content_type, content):
+    def content_analyse(self, content_type=None, content=None,
+                        content_min_length=50, client=None):
+        if content_type is None or content is None or client is None:
+            return None
         self.logger.debug("content_analyse {}".format(content_type[0]))
-        content_min_length = 50
         if len(content) < content_min_length:
             result = None
             self.logger.debug("content_analyse content_min_length < {}".format(content_min_length))
             return result
         if content_type[0] == b'text/plain':
             content = self.remove_newline.sub(b' ', content)
-            response = self.server.opentc["client"].predict_stream(content)
+            response = client.predict_stream(content)
             result = json.loads(response.decode('utf-8'))["result"]
             self.logger.debug("content_analyse predict_stream result: {}".format(result))
             return result
@@ -255,6 +274,8 @@ class ICAPHandler(BaseICAPRequestHandler):
             result = None
             self.logger.debug("content_analyse predict_stream result: {}".format(result))
             return result
+        else:
+            return None
 
 
 if __name__ == '__main__':

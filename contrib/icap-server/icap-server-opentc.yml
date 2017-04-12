@@ -8,6 +8,9 @@ icap_server:
     bayes: False
     svm: False
     cnn: True
+  content_min_length: 50
+  replacement_http_method: POST
+  replacement_url: http://oldjava.org/cgi-bin/_post
 
 opentc_server:
   address: localhost
