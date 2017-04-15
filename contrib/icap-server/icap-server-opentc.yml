@@ -10,7 +10,8 @@ icap_server:
     cnn: True
   content_min_length: 50
   replacement_http_method: POST
-  replacement_url: http://oldjava.org/cgi-bin/_post
+  # replacement_url: http://oldjava.org/cgi-bin/_post
+  replacement_url: http://opentc.oldjava.org:8000/opentc/request_submit/
 
 opentc_server:
   address: localhost

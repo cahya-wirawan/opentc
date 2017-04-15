@@ -58,6 +58,7 @@ class Client(object):
             return response
         except ConnectionError as err:
             logger.error("OS error: {0}".format(err))
+            raise
 
     def md5_file(self, file_name=None):
         # This function is just for testing purpose

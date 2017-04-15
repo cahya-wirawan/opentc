@@ -7,6 +7,7 @@ import magic
 import socketserver
 import multipart
 import logging.config
+import traceback
 import json
 import argparse
 import yaml
@@ -86,12 +87,17 @@ class ICAPHandler(BaseICAPRequestHandler):
     remove_newline = re.compile(b'\r?\n')
 
     def opentc_OPTIONS(self):
-        response = self.server.opentc["client"].command("PING\n")
-        response = json.loads(response.decode('utf-8'))
-        if response["status"] == "OK":
-            self.logger.debug("OPTIONS Ping response: {}".format(response))
-        else:
-            self.logger.debug("OPTIONS Ping response: the OpenTC server is not responding")
+        try:
+            response = self.server.opentc["client"].command("PING\n")
+            response = json.loads(response.decode('utf-8'))
+            self.logger.debug("REQMOD Ping response: {}".format(response))
+            if response["status"] == "OK":
+                self.logger.debug("OPTIONS Ping response: {}".format(response))
+            else:
+                self.logger.debug("OPTIONS Ping response: the OpenTC server is not responding")
+        except BrokenPipeError as err:
+            self.logger.error("Exception: {}".format(err))
+            self.logger.error(traceback.format_exc())
         self.set_icap_response(200)
         self.set_icap_header(b'Methods', b'REQMOD')
         self.set_icap_header(b'Service', b'PyICAP Server 1.0')
@@ -107,8 +113,8 @@ class ICAPHandler(BaseICAPRequestHandler):
             response = self.server.opentc["client"].command("PING\n")
             response = json.loads(response.decode('utf-8'))
             self.logger.debug("REQMOD Ping response: {}".format(response))
-        except OSError as err:
-            self.logger.error("OS error: {0}".format(err))
+        except Exception as err:
+            self.logger.error(traceback.format_exc())
 
         def on_part_begin():
             self.multipart_data = dict()
@@ -126,7 +132,8 @@ class ICAPHandler(BaseICAPRequestHandler):
                     mime_type = magic.from_buffer(self.multipart_data[b'Content'], mime=True)
                     self.logger.debug("Content mime_type: {}".format(mime_type))
                     if b'Content-Type' in self.multipart_data:
-                        content_type = [ct.strip() for ct in self.multipart_data[b'Content-Type'].split(b';')]
+                        # content_type = [ct.strip() for ct in self.multipart_data[b'Content-Type'].split(b';')]
+                        content_type = [mime_type]
                         result = self.content_analyse(
                             content_type=content_type, content=self.multipart_data[b'Content'],
                             content_min_length=self.server.opentc["config"]["content_min_length"],
@@ -245,7 +252,8 @@ class ICAPHandler(BaseICAPRequestHandler):
                 self.send_headers(True)
                 self.write_chunk(self.big_chunk)
             else:
-                content = json.dumps(self.content_analysis_results).encode("utf-8")
+                content = json.dumps(self.content_analysis_results)
+                content = "result={}".format(content).encode("utf-8")
                 enc_req = self.enc_req[:]
                 enc_req[0] = self.server.opentc["config"]["replacement_http_method"].encode("utf-8")
                 enc_req[1] = self.server.opentc["config"]["replacement_url"].encode("utf-8")
@@ -264,7 +272,7 @@ class ICAPHandler(BaseICAPRequestHandler):
             result = None
             self.logger.debug("content_analyse content_min_length < {}".format(content_min_length))
             return result
-        if content_type[0] == b'text/plain':
+        if content_type[0] in [ "text/plain", "message/rfc822"]:
             content = self.remove_newline.sub(b' ', content)
             response = client.predict_stream(content)
             result = json.loads(response.decode('utf-8'))["result"]
