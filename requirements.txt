@@ -4,3 +4,4 @@ PyYAML>=3.12
 scikit-learn>=0.18.1
 scipy>=0.19.0
 tensorflow>=1.0.1
+textract>=1.5.0

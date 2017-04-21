@@ -116,6 +116,7 @@ class CnnTextEvaluator(object):
         graph = tf.Graph()
         with graph.as_default():
             session_conf = tf.ConfigProto(
+                # device_count={'GPU':0},
                 allow_soft_placement=self.cfg['allow_soft_placement'],
                 log_device_placement=self.cfg['log_device_placement'])
             self.sess = tf.Session(config=session_conf)
@@ -196,6 +197,7 @@ class CnnTextTraining(object):
 
         with tf.Graph().as_default():
             session_conf = tf.ConfigProto(
+                # device_count={'GPU':0},
                 allow_soft_placement=self.cfg['allow_soft_placement'],
                 log_device_placement=self.cfg['log_device_placement'])
             sess = tf.Session(config=session_conf)

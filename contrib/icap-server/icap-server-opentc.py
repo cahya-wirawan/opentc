@@ -11,6 +11,8 @@ import traceback
 import json
 import argparse
 import yaml
+import textract
+import tempfile
 from opentc.client import Client
 from multipart.multipart import parse_options_header
 from pyicap import ICAPServer, BaseICAPRequestHandler
@@ -134,11 +136,23 @@ class ICAPHandler(BaseICAPRequestHandler):
                     if b'Content-Type' in self.multipart_data:
                         # content_type = [ct.strip() for ct in self.multipart_data[b'Content-Type'].split(b';')]
                         content_type = [mime_type]
+                        content_disposition = {'name': '', 'filename': ''}
+                        for x in self.multipart_data[b'Content-Disposition'].split(b';'):
+                            if b'=' in x:
+                                key, value = x.split(b'=')
+                                key = key.decode("utf-8").strip(" \"")
+                                value = value.decode("utf-8").strip(" \"")
+                                content_disposition[key] = value
+
+                        print(content_disposition)
                         result = self.content_analyse(
+                            converter=self.server.opentc["config"]["converter"],
+                            content_disposition=content_disposition,
                             content_type=content_type, content=self.multipart_data[b'Content'],
                             content_min_length=self.server.opentc["config"]["content_min_length"],
                             client=self.server.opentc["client"])
                         name = self.multipart_data[b'Content-Disposition'].split(b';')[1].split(b'=')[1]
+
                         self.content_analysis_results[name.decode("utf-8").replace('"', '')] = result
                 else:
                     self.logger.debug("{}: {}".format(key, self.multipart_data[key]))
@@ -223,6 +237,7 @@ class ICAPHandler(BaseICAPRequestHandler):
                     start = end
             else:
                 result = self.content_analyse(
+                    converter=self.server.opentc["config"]["converter"],
                     content_type=content_type, content=self.big_chunk,
                     content_min_length=self.server.opentc["config"]["content_min_length"],
                     client=self.server.opentc["client"])
@@ -263,8 +278,9 @@ class ICAPHandler(BaseICAPRequestHandler):
                 self.send_headers(True)
                 self.write_chunk(content)
 
-    def content_analyse(self, content_type=None, content=None,
-                        content_min_length=50, client=None):
+    def content_analyse(self, content_disposition=None, content_type=None, content=None,
+                        content_min_length=50, client=None,
+                        converter=None):
         if content_type is None or content is None or client is None:
             return None
         self.logger.debug("content_analyse {}".format(content_type[0]))
@@ -272,15 +288,30 @@ class ICAPHandler(BaseICAPRequestHandler):
             result = None
             self.logger.debug("content_analyse content_min_length < {}".format(content_min_length))
             return result
-        if content_type[0] in [ "text/plain", "message/rfc822"]:
-            content = self.remove_newline.sub(b' ', content)
-            response = client.predict_stream(content)
-            result = json.loads(response.decode('utf-8'))["result"]
-            self.logger.debug("content_analyse predict_stream result: {}".format(result))
+        if content_type[0] in converter and converter[content_type[0]] == "text":
+            content = self.convert_to_text(content=content, converter=converter[content_type[0]])
+        elif content_type[0] in converter and converter[content_type[0]] == "textract":
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                path = os.path.join(tmpdirname, content_disposition["filename"])
+                with open(path, "wb") as f:
+                    f.write(content)
+                content = self.convert_to_text(path=path, converter=converter[content_type[0]])
+        else:
+            return None
+        if content is None:
+            return None
+        response = client.predict_stream(content)
+        result = json.loads(response.decode('utf-8'))["result"]
+        self.logger.debug("content_analyse predict_stream result: {}".format(result))
+        return result
+
+    def convert_to_text(self, path=None, content=None, converter=None):
+        if converter == "text":
+            result = self.remove_newline.sub(b' ', content)
             return result
-        elif content_type[0] == b'application/pdf':
-            result = None
-            self.logger.debug("content_analyse predict_stream result: {}".format(result))
+        elif converter == "textract":
+            result = textract.process(path)
+            result = self.remove_newline.sub(b' ', result)
             return result
         else:
             return None

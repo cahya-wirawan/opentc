@@ -63,3 +63,7 @@ Classify file. It uses a new line character as delimiter for every sentences
 #### CLOSE
 Close the connection
 
+## Todo
+- Multilabel classification
+- Include FastText from Facebookresearch
+- 
