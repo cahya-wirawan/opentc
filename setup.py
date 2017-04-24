@@ -1,3 +1,4 @@
+import os
 from setuptools import setup, find_packages
 
 try:
@@ -8,6 +9,8 @@ except ImportError:
 
 __version__ = ""
 exec(open('opentc/config.py').read())
+if os.path.islink("opentc/util"):
+    os.remove("opentc/util")
 
 setup(
     name='opentc',
