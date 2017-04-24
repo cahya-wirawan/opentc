@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import os.path
-import logging
 import argparse
-from opentc.util import setup_logging, setup_config
-from opentc.server import Server
+import logging
+import os.path
 
+from opentc.util import setup_logging, setup_config
+
+from opentc.core.server import Server
 
 if __name__ == "__main__":
     config_directories = [os.curdir, os.path.expanduser("~/.opentc"), "/etc/opentc", os.environ.get("OPENTC_CONF_DIR")]

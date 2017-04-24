@@ -1,10 +1,12 @@
-import os
-import tensorflow as tf
-import numpy as np
-from tensorflow.contrib import learn
-import time
 import datetime
 import logging
+import os
+import time
+
+import numpy as np
+import tensorflow as tf
+from tensorflow.contrib import learn
+
 from . import cnn_text_util
 
 
@@ -265,15 +267,15 @@ class CnnTextTraining(object):
                         # load embedding vectors from the word2vec
                         self.logger.debug("Load word2vec file {}".format(self.cfg['word_embeddings']['word2vec']['path']))
                         initW = cnn_text_util.load_embedding_vectors_word2vec(vocabulary,
-                                                                                    self.cfg['word_embeddings']['word2vec']['path'],
-                                                                                    self.cfg['word_embeddings']['word2vec']['binary'])
+                                                                              self.cfg['word_embeddings']['word2vec']['path'],
+                                                                              self.cfg['word_embeddings']['word2vec']['binary'])
                         self.logger.debug("word2vec file has been loaded")
                     elif self.embedding_name == 'glove':
                         # load embedding vectors from the glove
                         self.logger.debug("Load glove file {}".format(self.cfg['word_embeddings']['glove']['path']))
                         initW = cnn_text_util.load_embedding_vectors_glove(vocabulary,
-                                                                                 self.cfg['word_embeddings']['glove']['path'],
-                                                                                 self.embedding_dimension)
+                                                                           self.cfg['word_embeddings']['glove']['path'],
+                                                                           self.embedding_dimension)
                         self.logger.debug("glove file has been loaded\n")
                     sess.run(cnn.W.assign(initW))
 

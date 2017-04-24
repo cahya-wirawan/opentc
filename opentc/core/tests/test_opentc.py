@@ -1,13 +1,15 @@
-import unittest
-from opentc.server import Server
-from opentc.client import Client
 import json
-import tempfile
-import os
-import time
 import logging
-from opentc import setup_logging
-from opentc import __version__
+import os
+import tempfile
+import time
+import unittest
+
+from opentc.util.client import Client
+
+from opentc.core import __version__
+from opentc.util import setup_logging
+from opentc.core.server import Server
 
 
 class TestOpentc(unittest.TestCase):

@@ -56,7 +56,7 @@ class Dataset(ABC):
 
     @staticmethod
     def create_dataset(dataset):
-        module = __import__("opentc.dataset." + dataset['name'])
-        class_ = getattr(getattr(getattr(module, "dataset"), dataset['name']), dataset['name'].title().replace("_",""))
+        module = __import__("opentc.core.dataset." + dataset['name'])
+        class_ = getattr(getattr(getattr(getattr(module, "core"), "dataset"), dataset['name']), dataset['name'].title().replace("_",""))
         instance = class_(dataset)
         return instance

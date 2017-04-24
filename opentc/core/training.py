@@ -1,9 +1,10 @@
 
-import os
-import logging.config
 import logging
+import logging.config
+import os
 from datetime import datetime
-from opentc.dataset import Dataset
+
+from opentc.core.dataset import Dataset
 
 
 class Training(object):
@@ -27,8 +28,9 @@ class Training(object):
         for classifier_name in self.cfg["classifiers"]:
             if classifier_name == "default":
                 continue
-            module = __import__("opentc.classifier." + classifier_name)
-            class_ = getattr(getattr(getattr(module, "classifier"), classifier_name), classifier_name.title())
+            module = __import__("opentc.core.classifier." + classifier_name)
+            class_ = getattr(getattr(getattr(getattr(module, "core"), "classifier"),
+                                     classifier_name), classifier_name.title())
             if class_:
                 classifier = dict()
                 classifier["enabled"] = self.cfg["classifiers"][classifier_name]["enabled"]

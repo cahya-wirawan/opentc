@@ -1,21 +1,23 @@
 #!/bin/env python
 # -*- coding: utf8 -*-
 
+import argparse
+import json
+import logging.config
 import os
 import re
-import magic
 import socketserver
-import multipart
-import logging.config
-import traceback
-import json
-import argparse
-import yaml
-import textract
 import tempfile
-from opentc.client import Client
+import traceback
+
+import magic
+import multipart
+import textract
+import yaml
 from multipart.multipart import parse_options_header
 from pyicap import ICAPServer, BaseICAPRequestHandler
+
+from opentc.core.client import Client
 
 
 def setup_logging(

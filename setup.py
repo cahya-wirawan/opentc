@@ -8,7 +8,7 @@ except ImportError:
     long_description = open('README.md').read()
 
 __version__ = ""
-exec(open('opentc/config.py').read())
+exec(open('opentc/core/config.py').read())
 if os.path.islink("opentc/util"):
     os.remove("opentc/util")
 

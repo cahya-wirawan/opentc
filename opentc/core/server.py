@@ -7,7 +7,7 @@ import hashlib
 import struct
 import json
 import logging
-from . import __version__
+from opentc.core import __version__
 
 
 class Server(object):
@@ -30,8 +30,10 @@ class Server(object):
         for classifier_name in self.cfg['classifiers']:
             if classifier_name == "default":
                 continue
-            module = __import__("opentc.classifier." + classifier_name)
-            class_ = getattr(getattr(getattr(module, "classifier"), classifier_name), classifier_name.title())
+            module = __import__("opentc.core.classifier." + classifier_name)
+            class_ = getattr(getattr(getattr(getattr(module, "core"), "classifier"),
+                                     classifier_name), classifier_name.title())
+            # class_ = attr4
             if class_ is not None:
                 classifier = dict()
                 classifier['enabled'] = self.cfg['classifiers'][classifier_name]['enabled']
