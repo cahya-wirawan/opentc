@@ -3,7 +3,7 @@ import os.path
 import logging
 import argparse
 from opentc.training import Training
-from opentc import setup_logging, setup_config
+from opentc.util import setup_logging, setup_config
 
 
 if __name__ == "__main__":

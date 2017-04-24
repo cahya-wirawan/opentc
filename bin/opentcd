@@ -2,7 +2,7 @@
 import os.path
 import logging
 import argparse
-from opentc import setup_logging, setup_config
+from opentc.util import setup_logging, setup_config
 from opentc.server import Server
 
 
