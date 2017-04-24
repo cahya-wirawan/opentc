@@ -1,5 +1,10 @@
 
 # icap-server-opentc.py
+
+The development of this icap-server has been moved to [OpenTC-icap](https://github.com/cahya-wirawan/opentc-icap
+"ICAP Server for OpenTC")
+
+
 The Internet Content Adaptation Protocol (ICAP) is a lightweight HTTP-like protocol specified in RFC 3507 which 
 is used to extend transparent proxy servers. It is used generally for a virus scanner or content filtering. 
 
