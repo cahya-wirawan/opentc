@@ -1,7 +1,9 @@
 import numpy as np
 import re
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta
+
+ABC = ABCMeta('ABC', (object,), {})
 
 
 class Dataset(ABC):

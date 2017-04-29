@@ -1,5 +1,7 @@
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
+
+ABC = ABCMeta('ABC', (object,), {})
 
 
 class Classifier(ABC):
