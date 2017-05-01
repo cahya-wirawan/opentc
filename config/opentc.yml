@@ -59,25 +59,25 @@ datasets: &datasets
       info: "Data source for the negative data"
   twenty_newsgroup: &twenty_newsgroup
     # The dataset includes following 20 newsgroups:
-    # alt.atheism,
-    # comp.graphics,
-    # comp.os.ms-windows.misc,
-    # comp.sys.ibm.pc.hardware,
-    # comp.sys.mac.hardware,
-    # comp.windows.x,
-    # misc.forsale,
-    # rec.autos,
-    # rec.motorcycles,
-    # rec.sport.baseball,
-    # rec.sport.hockey,
-    # sci.crypt,
-    # sci.electronics,
-    # sci.med,
-    # sci.space,
-    # soc.religion.christian,
-    # talk.politics.guns,
-    # talk.politics.mideast,
-    # talk.politics.misc,
+    # alt.atheism
+    # comp.graphics
+    # comp.os.ms-windows.misc
+    # comp.sys.ibm.pc.hardware
+    # comp.sys.mac.hardware
+    # comp.windows.x
+    # misc.forsale
+    # rec.autos
+    # rec.motorcycles
+    # rec.sport.baseball
+    # rec.sport.hockey
+    # sci.crypt
+    # sci.electronics
+    # sci.med
+    # sci.space
+    # soc.religion.christian
+    # talk.politics.guns
+    # talk.politics.mideast
+    # talk.politics.misc
     # talk.religion.misc
     name: twenty_newsgroup
     categories:
@@ -85,7 +85,7 @@ datasets: &datasets
       - comp.graphics
       - sci.med
       - soc.religion.christian
-    subset: test
+    subset: train
     shuffle: True
     random_state: 42
   generic: &generic
