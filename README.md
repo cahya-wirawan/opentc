@@ -13,7 +13,11 @@ In the future it will also support FastText from Facebookresearch.
 The engine is running as a server listening on command and text to be classified. By default it listens on localhost 
 port 3333, but it can be changed in the yaml configuration file. 
 
-## Features
+OpenTC can be used for example for text classification (a demo website for this purpose is available online 
+[OpenTC demo](http://opentc.oldjava.org/demo/)), or for other purposes such as Data Leak Prevention (DLP). 
+An example of implementation for the DLP has been created as ICAP Server: 
+[opentc-icap](https://github.com/cahya-wirawan/opentc-icap) 
+
 
 ## Requirements
 - Python 3.x
@@ -44,8 +48,26 @@ or clone the repository
 opentc
 
 #### Description
-The daemon listens for incoming connections on TCP socket and classify files or text string on demand. 
-It reads the configuration from /etc/opentc/opentc.yml
+The command line to train the application based on the datasets define in the configuration file. The result
+of the training (pre-trained data) can be used for the opentcd server.
+
+#### Usage
+
+    $ python opentc -h
+    usage: opentc [-h] [-c CLASSIFIER] [-C CONFIGURATION_FILE] [-d DATASET]
+                  [-l LOG_CONFIGURATION_FILE]
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -c CLASSIFIER, --classifier CLASSIFIER
+                            set classifier to use for the training (support
+                            currently bayesian, svm or cnn)
+      -C CONFIGURATION_FILE, --configuration_file CONFIGURATION_FILE
+                            set the configuration file
+      -d DATASET, --dataset DATASET
+                            set dataset to use for the training
+      -l LOG_CONFIGURATION_FILE, --log_configuration_file LOG_CONFIGURATION_FILE
+                            set the log configuration file
 
 
 ### opentcd
