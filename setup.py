@@ -33,6 +33,7 @@ setup(
     package_dir={'': '.'},
     install_requires=[
         'numpy',
+        'opentc-util',
         'pyparsing',
         'PyYAML',
         'scikit-learn',
