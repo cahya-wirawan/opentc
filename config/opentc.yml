@@ -24,7 +24,6 @@ classifiers: &classifiers
       twenty_newsgroup: data/input/svm_twenty_newsgroup_20170323_142449.pkl
   cnn:
     enabled: True
-    batch_size: 64
     pre_trained_dir:
       mrpolarity: data/input/cnn_mrpolarity_20170301_090000
       twenty_newsgroup: data/input/cnn_twenty_newsgroup_20170301_090000

@@ -52,7 +52,7 @@ class TestOpentc(unittest.TestCase):
         self.logger.debug("tearDown")
 
     def test_ping(self):
-        response = self.tcc.command("PING\n")
+        response = self.tcc.ping()
         response = json.loads(response.decode('utf-8'))
         self.logger.debug("{}: {}".format(self._testMethodName, response))
         self.assertEqual('PONG', response['result'])

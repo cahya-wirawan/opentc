@@ -106,7 +106,7 @@ class Server(object):
                     self.logger.info("Thread {} received: {}".format(cur_thread.name, data))
                     header = data.split(b':')
                     if header[0] == b'PING':
-                        self.ping()
+                        self.ping(header[1].decode('utf-8'))
                     elif header[0] == b'VERSION':
                         self.version()
                     elif header[0] == b'RELOAD':
@@ -152,12 +152,14 @@ class Server(object):
             data = self.rfile.read(size)
             return data
 
-        def ping(self):
+        def ping(self, mid=0):
             response = dict()
             response["status"] = "OK"
+            response["mid"] = mid
             response["result"] = "PONG"
             response = json.dumps(response).encode('utf-8')
             self.send(response)
+            self.logger.debug("Ping sent pong with mid: {}".format(mid))
 
         def close(self):
             response = dict()
