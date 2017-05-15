@@ -1,5 +1,5 @@
 numpy>=1.12.1
-opentc-util>=0.1.2
+opentc-util>=0.1.4
 pyparsing>=2.2.0
 PyYAML>=3.12
 scikit-learn>=0.18.1

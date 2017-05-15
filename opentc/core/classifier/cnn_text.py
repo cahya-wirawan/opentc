@@ -154,7 +154,7 @@ class CnnTextEvaluator(object):
 
         response = [int(i) for i in all_predictions]
         end = time.time()
-        self.logger.debug("Predict time: {} seconds".format(end - start))
+        self.logger.info("Predict time: {} seconds".format(end - start))
         self.logger.debug("Response: {}".format(response))
         return response
 

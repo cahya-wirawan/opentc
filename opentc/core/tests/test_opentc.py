@@ -99,36 +99,42 @@ class TestOpentc(unittest.TestCase):
     def test_predict_stream_0(self):
         start = time.time()
         response = self.tcc.predict_stream(self.x_raw[0].encode('utf-8'))
-        response = json.loads(response.decode('utf-8'))
-        end = time.time()
-        self.logger.debug("Time elapsed: {}".format(end - start))
-        self.logger.debug("{}: {}".format(self._testMethodName, response))
-        self.assertEqual({'bayes': ['comp.graphics'],
-                          'cnn': ['comp.graphics'],
-                          'svm': ['comp.graphics']}, response['result'])
+        self.assertIsNotNone(response)
+        if response is not None:
+            response = json.loads(response.decode('utf-8'))
+            end = time.time()
+            self.logger.debug("Time elapsed: {}".format(end - start))
+            self.logger.debug("{}: {}".format(self._testMethodName, response))
+            self.assertEqual({'bayes': ['comp.graphics'],
+                              'cnn': ['comp.graphics'],
+                              'svm': ['comp.graphics']}, response['result'])
 
     def test_predict_stream_1(self):
         start = time.time()
         response = self.tcc.predict_stream(self.x_raw[1].encode('utf-8'))
-        response = json.loads(response.decode('utf-8'))
-        end = time.time()
-        self.logger.debug("Time elapsed: {}".format(end - start))
-        self.logger.debug("{}: {}".format(self._testMethodName, response))
-        self.assertEqual({'bayes': ['soc.religion.christian'],
-                          'cnn': ['soc.religion.christian'],
-                          'svm': ['soc.religion.christian']}, response['result'])
+        self.assertIsNotNone(response)
+        if response is not None:
+            response = json.loads(response.decode('utf-8'))
+            end = time.time()
+            self.logger.debug("Time elapsed: {}".format(end - start))
+            self.logger.debug("{}: {}".format(self._testMethodName, response))
+            self.assertEqual({'bayes': ['soc.religion.christian'],
+                              'cnn': ['soc.religion.christian'],
+                              'svm': ['soc.religion.christian']}, response['result'])
 
     def test_predict_stream_2(self):
         start = time.time()
         response = self.tcc.predict_stream('\n'.join(self.x_raw).encode('utf-8'))
-        response = json.loads(response.decode('utf-8'))
-        end = time.time()
-        self.logger.debug("Time elapsed: {}".format(end - start))
-        self.logger.debug("{}: {}".format(self._testMethodName, response))
-        self.assertEqual({'bayes': ['comp.graphics', 'soc.religion.christian', 'sci.med'],
-                          'cnn': ['comp.graphics', 'soc.religion.christian', 'sci.med'],
-                          'svm': ['comp.graphics', 'soc.religion.christian', 'sci.med']},
-                         response['result'])
+        self.assertIsNotNone(response)
+        if response is not None:
+            response = json.loads(response.decode('utf-8'))
+            end = time.time()
+            self.logger.debug("Time elapsed: {}".format(end - start))
+            self.logger.debug("{}: {}".format(self._testMethodName, response))
+            self.assertEqual({'bayes': ['comp.graphics', 'soc.religion.christian', 'sci.med'],
+                              'cnn': ['comp.graphics', 'soc.religion.christian', 'sci.med'],
+                              'svm': ['comp.graphics', 'soc.religion.christian', 'sci.med']},
+                             response['result'])
 
     def test_predict_file(self):
         fd, temp_path = tempfile.mkstemp()

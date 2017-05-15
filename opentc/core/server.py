@@ -123,7 +123,7 @@ class Server(object):
                     elif header[0] == b'MD5_STREAM':
                         self.md5_stream()
                     elif header[0] == b'PREDICT_STREAM':
-                        self.predict_stream()
+                        self.predict_stream(header[1].decode('utf-8'))
                     elif header[0] == b'PREDICT_FILE':
                         file_name = header[1]
                         self.predict_file(file_name=file_name)
@@ -152,7 +152,7 @@ class Server(object):
             data = self.rfile.read(size)
             return data
 
-        def ping(self, mid=0):
+        def ping(self, mid=None):
             response = dict()
             response["status"] = "OK"
             response["mid"] = mid
@@ -233,18 +233,20 @@ class Server(object):
                 response = json.dumps(response).encode('utf-8')
             self.send(response)
 
-        def predict_stream(self):
+        def predict_stream(self, mid=None):
             stream = b''
             while True:
                 data = self.receive()
-                self.logger.debug("Data: {}".format(data))
                 if data is None:
                     break
+                else:
+                    self.logger.debug("Data: {}...".format(data[:128]))
                 stream += data
             stream = stream.decode('utf-8')
             multi_line = stream.split('\n')
             response = dict()
             response["status"] = "OK"
+            response["mid"] = mid
             result = dict()
             for classifier_name in Server.classifiers.keys():
                 if Server.classifiers[classifier_name]['enabled']:

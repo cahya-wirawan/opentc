@@ -1,3 +1,4 @@
+import time
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
@@ -29,7 +30,10 @@ class Bayes(Classifier):
         self.clf = joblib.load(filename)
 
     def predict(self, data):
+        start = time.time()
         self.logger.debug("predict")
         predicted = self.clf.predict(data)
         predicted = [self.categories[i] for i in predicted]
+        end = time.time()
+        self.logger.info("Predict time: {} seconds".format(end - start))
         return predicted
