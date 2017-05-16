@@ -125,8 +125,9 @@ class Server(object):
                     elif header[0] == b'PREDICT_STREAM':
                         self.predict_stream(header[1].decode('utf-8'))
                     elif header[0] == b'PREDICT_FILE':
-                        file_name = header[1]
-                        self.predict_file(file_name=file_name)
+                        mid = header[1].decode('utf-8')
+                        file_name = header[2]
+                        self.predict_file(mid=mid, file_name=file_name)
                     elif header[0] == b'CLOSE':
                         self.close()
                         break
@@ -256,11 +257,12 @@ class Server(object):
             response = json.dumps(response).encode('utf-8')
             self.send(response)
 
-        def predict_file(self, file_name=None):
+        def predict_file(self,  mid=None, file_name=None):
             data = open(file_name, 'rb').read().decode('utf-8')
             multi_line = data.split('\n')
             response = dict()
             response["status"] = "OK"
+            response["mid"] = mid
             result = dict()
             for classifier_name in Server.classifiers.keys():
                 if Server.classifiers[classifier_name]['enabled']:
