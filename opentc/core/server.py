@@ -254,6 +254,7 @@ class Server(object):
                     result[classifier_name] = \
                         Server.classifiers[classifier_name]['class'].predict(multi_line)
             response["result"] = result
+            self.logger.info("Result: {}".format(result))
             response = json.dumps(response).encode('utf-8')
             self.send(response)
 
@@ -269,6 +270,7 @@ class Server(object):
                     result[classifier_name] = \
                         Server.classifiers[classifier_name]['class'].predict(multi_line)
             response["result"] = result
+            self.logger.info("Result: {}".format(result))
             response = json.dumps(response).encode('utf-8')
             self.send(response)
 

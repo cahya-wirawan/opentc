@@ -155,4 +155,4 @@ Close the connection
 ## Todo
 - Multilabel classification
 - Include FastText from Facebookresearch
-- 
+- Will use pyzmq and google's protobuf to improve the protocol and network communication
