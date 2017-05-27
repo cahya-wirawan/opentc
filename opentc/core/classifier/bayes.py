@@ -32,8 +32,10 @@ class Bayes(Classifier):
     def predict(self, data):
         start = time.time()
         self.logger.debug("predict")
-        predicted = self.clf.predict(data)
-        predicted = [self.categories[i] for i in predicted]
+        prediction = self.clf.predict(data)
+        probability = self.clf.predict_proba(data)
+        result = ["{0}:{1:.2}".format(self.categories[prediction[i]], probability[i][prediction[i]])
+                  for i in range(len(prediction))]
         end = time.time()
         self.logger.info("Predict time: {} seconds".format(end - start))
-        return predicted
+        return result

@@ -21,7 +21,7 @@ classifiers: &classifiers
     enabled: True
     pre_trained_file:
       mrpolarity:  data/input/svm_mrpolarity_20170323_142422.pkl
-      twenty_newsgroup: data/input/svm_twenty_newsgroup_20170323_142449.pkl
+      twenty_newsgroup: data/input/svm_twenty_newsgroup_20170526_221750.pkl
   cnn:
     enabled: True
     pre_trained_dir:

@@ -20,20 +20,22 @@ class Svm(Classifier):
         self.logger.debug("fit")
         self.clf = Pipeline([('vect', CountVectorizer()),
                              ('tfidf', TfidfTransformer()),
-                             ('clf', SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=5, random_state=42)),
+                             ('clf', SGDClassifier(loss='log', penalty='l2', alpha=1e-3, n_iter=5, random_state=42)),
                              ])
         self.clf.fit(dataset.get_dataset()['data'], dataset.get_dataset()['target'])
         joblib.dump(self.clf, filename + ".pkl", compress=9)
 
     def reload(self, filename):
-        self.logger.info("reload")
+        self.logger.debug("reload")
         self.clf = joblib.load(filename)
 
     def predict(self, data):
         start = time.time()
         self.logger.debug("predict")
-        predicted = self.clf.predict(data)
-        predicted = [self.categories[i] for i in predicted]
+        prediction = self.clf.predict(data)
+        probability = self.clf.predict_proba(data)
+        result = ["{0}:{1:.2}".format(self.categories[prediction[i]], probability[i][prediction[i]])
+                  for i in range(len(prediction))]
         end = time.time()
         self.logger.info("Predict time: {} seconds".format(end - start))
-        return predicted
+        return result

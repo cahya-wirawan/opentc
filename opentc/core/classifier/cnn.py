@@ -23,6 +23,7 @@ class Cnn(Classifier):
 
     def predict(self, data):
         self.logger.debug("predict")
-        predicted = self.evaluator.predict(data)
-        predicted = [self.categories[i] for i in predicted]
-        return predicted
+        result = self.evaluator.predict(data)
+        result = ["{0}:{1:.2}".format(self.categories[result["predictions"][i]],
+                                 result["probabilities"][i]) for i in range(len(result["predictions"]))]
+        return result

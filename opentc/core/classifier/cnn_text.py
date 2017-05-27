@@ -136,6 +136,9 @@ class CnnTextEvaluator(object):
                 # Tensors we want to evaluate
                 self.predictions = graph.get_operation_by_name("output/predictions").outputs[0]
 
+                # Tensors we want to evaluate
+                self.scores = graph.get_operation_by_name("output/scores").outputs[0]
+
     def predict(self, x_raw=None):
         start = time.time()
         self.x_raw = x_raw
@@ -146,17 +149,32 @@ class CnnTextEvaluator(object):
 
         # Collect the predictions here
         all_predictions = []
+        all_probabilities = None
 
         for x_test_batch in batches:
-            batch_predictions = self.sess.run(self.predictions,
-                                              {self.input_x: x_test_batch, self.dropout_keep_prob: 1.0})
-            all_predictions = np.concatenate([all_predictions, batch_predictions])
-
-        response = [int(i) for i in all_predictions]
+            batch_predictions_scores = self.sess.run([self.predictions, self.scores],
+                                                {self.input_x: x_test_batch, self.dropout_keep_prob: 1.0})
+            all_predictions = np.concatenate([all_predictions, batch_predictions_scores[0]])
+            probabilities = self.softmax(batch_predictions_scores[1])
+            if all_probabilities is not None:
+                all_probabilities = np.concatenate([all_probabilities, probabilities])
+            else:
+                all_probabilities = probabilities
+        response = dict()
+        response["predictions"] = [int(i) for i in all_predictions]
+        response["probabilities"] = [all_probabilities[i][int(all_predictions[i])] for i in range(len(all_probabilities))]
         end = time.time()
         self.logger.info("Predict time: {} seconds".format(end - start))
         self.logger.debug("Response: {}".format(response))
         return response
+
+    def softmax(self, x):
+        """Compute softmax values for each sets of scores in x."""
+        if x.ndim == 1:
+            x = x.reshape((1, -1))
+        max_x = np.max(x, axis=1).reshape((-1, 1))
+        exp_x = np.exp(x - max_x)
+        return exp_x / np.sum(exp_x, axis=1).reshape((-1, 1))
 
 
 class CnnTextTraining(object):
