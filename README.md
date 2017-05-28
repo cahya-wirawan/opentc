@@ -156,3 +156,5 @@ Close the connection
 - Multilabel classification
 - Include FastText from Facebookresearch
 - Will use pyzmq and google's protobuf to improve the protocol and network communication
+- considering a multi processing server instead of multi threading due to the global interpreter lock 
+  used in threads which prevent the code to run really concurrently in multi processor environment.
