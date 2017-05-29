@@ -118,7 +118,7 @@ Run it as background application:
 
 #### datasets and pre-trained data
 The configuration file defines the path to the datasets and pre-trained data. A pre-trained data for testing
-purpose can be downloaded from [data](https://NoFile.io/f/6ZkDvJH0nT4), it is around 1.4GB. Just uncompress it 
+purpose can be downloaded from [data](https://NoFile.io/f/8DkSGjqW3qO/data.tgz), it is around 1.4GB. Just uncompress it 
 and change the path to the pre-trained data in opentc.yml file accordingly.
 
 #### Commands
